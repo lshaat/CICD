@@ -38,7 +38,7 @@
 
   - name: Install PostGreSQL
     yum: postgresql
-     state: present
+    state: present
 
 - hosts: haservers
   gather_facts: false
@@ -47,4 +47,4 @@
 
   - name: Install HA Proxy
     yum: haproxy
-     state: present
+    state: present
