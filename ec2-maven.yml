@@ -14,9 +14,9 @@
   tasks:
   - name: Install Required Packages
     yum: 
-     name: {{ item }} 
+     name: "{{ item }}" 
      state: latest
-    with_items: packages
+    with_items: "{{ packages }}"
   - name: Start and Enable Services
     service: 
       name: "{{ item }}" 
