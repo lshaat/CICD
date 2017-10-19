@@ -33,7 +33,6 @@
 
 - hosts: databaseservers
   gather_facts: false
-  become: yes
   tasks:
 
   - name: Install PostGreSQL
@@ -43,7 +42,6 @@
 
 - hosts: haservers
   gather_facts: false
-  become: yes
   tasks:
 
   - name: Install HA Proxy
