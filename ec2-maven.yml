@@ -9,7 +9,7 @@
   become: yes
   vars:
     packages:
-    - apache
+    - httpd
     - tomcat
   tasks:
   - name: Install Required Packages
