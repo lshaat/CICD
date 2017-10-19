@@ -16,7 +16,7 @@
       name: "{{ webserver_name }}"
       image: rhel-guest
       meta: "group={{ webserver_group }},deployment_name={{ deployment }}"
-      flavor: "{{ flavor }}"
+      flavor: "{{ flavour }}"
       security_groups: ICMP_and_SSH
       key_name: ansible_ssh
       nics:
@@ -49,7 +49,7 @@
       name: "{{ databaseserver_name }}"
       image: rhel-guest
       meta: "group={{ database_group }},deployment_name={{ deployment }}"
-      flavor: "{{ flavor_name }}"
+      flavor: "{{ flavour }}"
       security_groups: ICMP_and_SSH
       key_name: ansible_ssh
       nics:
@@ -82,7 +82,7 @@
       name: "{{ haserver_name }}"
       image: rhel-guest
       meta: "group={{ ha_group }},deployment_name={{ deployment }}"
-      flavor: "{{ flavor }}"
+      flavor: "{{ flavour }}"
       security_groups: ICMP_and_SSH
       key_name: ansible_ssh
       nics:
