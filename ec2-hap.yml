@@ -1,6 +1,13 @@
+- hosts: jumphost
+  name: Log on to JumpHost
+  gather_facts: false
+
+
+
 - hosts: tag_AnsibleGroup_frontends
   name: Configure the Front End Servers
   gather_facts: true
+  become: yes
   tasks:
   - name: Install HA Proxy Package
     yum: name=haproxy state=latest
