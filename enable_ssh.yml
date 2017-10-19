@@ -1,0 +1,47 @@
+- hosts: towers
+  become: yes
+  tasks:
+  - name: Copy SSH Key
+    copy:
+      src: /tmp/id_rsa
+      dest: /var/lib/awx/.ssh/ec2.pub
+      mode: 0600
+      owner: awx
+      group: awx
+  - name: Create ssh_config file for connecting to the jumpbox
+    blockinfile:
+      path: /var/lib/awx/.ssh/ec2_ssh_config
+      create: yes
+      owner: awx
+      group: awx
+      mode: 0640
+      block: |
+        Host bastion.c5aa.example.opentlc.com
+        Hostname bastion.c5aa.example.opentlc.com
+        IdentityFile ~/.ssh/ec2.pem
+        ForwardAgent yes
+        User lshaat-redhat.com
+        ControlMaster auto
+        ControlPath /tmp/%h-%r
+        ControlPersist 5m
+        StrictHostKeyChecking no
+
+        Host 10.10.10.*
+        User lshaat-redhat.com
+        IdentityFile ~/.ssh/ec2.pem
+        ProxyCommand ssh -F /var/lib/awx/.ssh/ec2_ssh_config lshaat-redhat.com@bastion.c5aa.example.opentlc.com -W %h:%p
+        StrictHostKeyChecking no
+  - name: Add ssh_args in ansible.cfg to point to the AWX user's SSH config
+    lineinfile:
+      path: /etc/ansible/ansible.cfg
+      insertafter: '^#ssh_args '
+      line: 'ssh_args = -F /var/lib/awx/.ssh/ec2_ssh_config'
+  - name: Disable PRoot
+    lineinfile:
+      path: /etc/tower/settings.py
+      line: 'AWX_PROOT_ENABLED = False'
+    notify:
+      - restart tower
+  handlers:
+    - name: restart tower
+      command: 'ansible-tower-service restart'

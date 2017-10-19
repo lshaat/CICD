@@ -1,7 +1,11 @@
+- hosts: jumphost
+  name: Log on to JumpHost
+  gather_facts: false
+
+
 - hosts: tag_AnsibleGroup_apps
-  name: Configure the Web Servers
+  name: Install App Servers
   gather_facts: true
-  tasks:
   - name: Install package
     yum: name=httpd state=latest
   - name: Start and Enable httpd service
