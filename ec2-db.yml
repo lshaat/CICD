@@ -14,5 +14,8 @@
       name: postgresql
       state: present
   - name: Start and Enable httpd service
-    service: name=postgresql state=started enabled=yes
+    service: 
+      name: postgresql.server 
+      state: started 
+      enabled: yes
 
