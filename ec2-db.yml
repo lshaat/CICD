@@ -13,9 +13,10 @@
     yum: 
       name: postgresql
       state: present
-  - name: Start and Enable httpd service
+
+  - name: Start and Enable PostGreSQL service
     service: 
-      name: postgresql.server 
+      name: postgresql 
       state: started 
       enabled: yes
 
