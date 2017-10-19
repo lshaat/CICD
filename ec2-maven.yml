@@ -1,0 +1,32 @@
+- hosts: jumphost
+  name: Log on to JumpHost
+  gather_facts: false
+
+
+- hosts: tag_AnsibleGroup_apps
+  name: Install App Servers
+  gather_facts: true
+  become: yes
+  vars:
+    packages:
+    - apache
+    - tomcat
+  tasks:
+  - name: Install Required Packages
+    yum: 
+     name: "{{ item }}" 
+     state: latest
+    with_items: packages
+  - name: Start and Enable Services
+    service: 
+      name: "{{ item }}" 
+      state: started 
+      enabled: yes
+    with_items: packages
+  - name: Install Maven App
+    maven_artifact:
+      group_id: junit
+      artifact_id: junit
+      version: latest
+      dest: /tmp/junit-4.11.jar
+  
