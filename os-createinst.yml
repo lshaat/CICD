@@ -1,0 +1,111 @@
+- hosts: jumpbox
+  vars:
+    webserver_name: 
+      - web2
+      - web3
+    databaseserver_name: db2
+    haserver_name: ha1
+    webserver_group: webservers
+    database_group: databaseservers
+    ha_group: haservers
+    deployment: dev
+  tasks:
+  - name: Create Web server instances
+    os_server:
+      cloud: ospcloud
+      name: "{{ webserver_name }}"
+      image: rhel-guest
+      meta: "group={{ webserver_group }},deployment_name={{ deployment }}"
+      flavor: "{{ flavor_name }}"
+      security_groups: ICMP_and_SSH
+      key_name: ansible_ssh
+      nics:
+      - net-name: int_network
+      userdata: |
+        #!/bin/bash
+        curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+        cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+        curl -o /tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
+        cp /tmp/internal.repo /etc/yum.repos.d/internal.repo
+    register: webserverip
+  - name: Add floating IP to webservers
+    os_floating_ip:
+      cloud: ospcloud
+      state: present
+      reuse: yes
+      server: "{{ webserver_name }}"
+      network: ext_network
+      wait: true
+      timeout: 180
+    register: webserverfloatingip
+  - name: Show webserver public IP
+    debug: var=webserverfloatingip.floating_ip.floating_ip_address
+  - name: Show webserver private IP
+    debug: var=webserverip.openstack.private_v4
+
+  - name: Create DB server instance
+    os_server:
+      cloud: ospcloud
+      name: "{{ databaseserver_name }}"
+      image: rhel-guest
+      meta: "group={{ database_group }},deployment_name={{ deployment }}"
+      flavor: "{{ flavor_name }}"
+      security_groups: ICMP_and_SSH
+      key_name: ansible_ssh
+      nics:
+      - net-name: int_network
+      userdata: |
+        #!/bin/bash
+        curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+        cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+        curl -o /tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
+        cp /tmp/internal.repo /etc/yum.repos.d/internal.repo
+    register: databaseserverip
+  - name: Add floating IP to databaseservers
+    os_floating_ip:
+      cloud: ospcloud
+      state: present
+      reuse: yes
+      server: "{{ databaseserver_name }}"
+      network: ext_network
+      wait: true
+      timeout: 180
+    register: databaseserverfloatingip
+  - name: Show Database public IP
+    debug: var=databaseserverfloatingip.floating_ip.floating_ip_address
+  - name: Show Database private IP
+    debug: var=databaseserverip.openstack.private_v4
+
+  - name: Create HA server instance
+    os_server:
+      cloud: ospcloud
+      name: "{{ haserver_name }}"
+      image: rhel-guest
+      meta: "group={{ ha_group }},deployment_name={{ deployment }}"
+      flavor: "{{ flavor_name }}"
+      security_groups: ICMP_and_SSH
+      key_name: ansible_ssh
+      nics:
+      - net-name: int_network
+      userdata: |
+        #!/bin/bash
+        curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+        cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+        curl -o /tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
+        cp /tmp/internal.repo /etc/yum.repos.d/internal.repo
+    register: haserverip
+  - name: Add floating IP to HA Server
+    os_floating_ip:
+      cloud: ospcloud
+      state: present
+      reuse: yes
+      server: "{{ haserver_name }}"
+      network: ext_network
+      wait: true
+      timeout: 180
+    register: haserverfloatingip
+  - name: Show HA public IP
+    debug: var=haserverfloatingip.floating_ip.floating_ip_address
+  - name: Show HA private IP
+    debug: var=haserverip.openstack.private_v4
+

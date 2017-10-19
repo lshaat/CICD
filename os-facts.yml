@@ -1,0 +1,9 @@
+- hosts: jumpbox
+  tasks:
+  - name: Create a server instance
+    os_image_facts:
+       cloud: ospcloud
+    register: cloud.info
+  - name: Show openstack facts
+    debug:
+       var=cloud.info
