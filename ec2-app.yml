@@ -6,6 +6,7 @@
 - hosts: tag_AnsibleGroup_apps
   name: Install App Servers
   gather_facts: true
+  become: yes
   tasks:
   - name: Install package
     yum: name=httpd state=latest
