@@ -12,7 +12,7 @@
   - name: Install PostGreSQL
     yum: 
       name: postgresql
-      state: present
+      state: latest
 
   - name: Start and Enable PostGreSQL service
     service: 
