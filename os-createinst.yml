@@ -13,7 +13,7 @@
   - name: Create Web server instances
     os_server:
       cloud: ospcloud
-      name: "{{ webserver_name }}"
+      name: "{{ item }}"
       image: rhel-guest
       meta: "group={{ webserver_group }},deployment_name={{ deployment }}"
       flavor: "{{ flavour }}"
@@ -28,6 +28,7 @@
         curl -o /tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
         cp /tmp/internal.repo /etc/yum.repos.d/internal.repo
     register: webserverip
+    with_items: webserver_name
   - name: Add floating IP to webservers
     os_floating_ip:
       cloud: ospcloud
