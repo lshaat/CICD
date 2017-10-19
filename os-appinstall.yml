@@ -37,8 +37,9 @@
   tasks:
 
   - name: Install PostGreSQL
-    yum: postgresql
-    state: present
+    yum: 
+      name: postgresql
+      state: present
 
 - hosts: haservers
   gather_facts: false
@@ -46,5 +47,6 @@
   tasks:
 
   - name: Install HA Proxy
-    yum: haproxy
-    state: present
+    yum:
+     name: haproxy
+     state: present
