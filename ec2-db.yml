@@ -1,0 +1,12 @@
+- hosts: tag_AnsibleGroup_appdbs
+  name: Configure the Database Servers
+  gather_facts: true
+  tasks:
+
+  - name: Install PostGreSQL
+    yum: 
+      name: postgresql
+      state: present
+  - name: Start and Enable httpd service
+    service: name=postgresql state=started enabled=yes
+

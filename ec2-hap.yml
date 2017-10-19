@@ -1,0 +1,8 @@
+- hosts: tag_AnsibleGroup_frontends
+  name: Configure the Front End Servers
+  gather_facts: true
+  tasks:
+  - name: Install HA Proxy Package
+    yum: name=haproxy state=latest
+  - name: Start and Enable HA Proxy service
+    service: name=haproxy state=started enabled=yes

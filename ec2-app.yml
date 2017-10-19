@@ -1,0 +1,12 @@
+- hosts: tag_AnsibleGroup_apps
+  name: Configure the Web Servers
+  gather_facts: true
+  tasks:
+  - name: Install package
+    yum: name=httpd state=latest
+  - name: Start and Enable httpd service
+    service: name=httpd state=started enabled=yes
+  - name: Create index.html
+    copy:
+     content: "Hello World"
+     dest: /var/www/html/index.html
