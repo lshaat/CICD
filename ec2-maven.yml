@@ -22,7 +22,7 @@
       name: "{{ item }}" 
       state: started 
       enabled: yes
-    with_items: packages
+    with_items: "{{ packages }}"
   - name: Install Maven App
     maven_artifact:
       group_id: junit
