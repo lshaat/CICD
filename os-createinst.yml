@@ -1,8 +1,7 @@
 - hosts: jumpbox
   vars:
-    webserver_name: 
-      - web2
-      - web3
+    webserver1_name: web2
+    webserver_name: web3
     databaseserver_name: db2
     haserver_name: ha1
     webserver_group: webservers
@@ -13,7 +12,7 @@
   - name: Create Web server instances
     os_server:
       cloud: ospcloud
-      name: {{ item }}
+      name: "{{ webserver_name }}"
       image: rhel-guest
       meta: "group={{ webserver_group }},deployment_name={{ deployment }}"
       flavor: "{{ flavour }}"
@@ -28,7 +27,6 @@
         curl -o /tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
         cp /tmp/internal.repo /etc/yum.repos.d/internal.repo
     register: webserverip
-    with_items: webserver_name
   - name: Add floating IP to webservers
     os_floating_ip:
       cloud: ospcloud
@@ -43,6 +41,40 @@
     debug: var=webserverfloatingip.floating_ip.floating_ip_address
   - name: Show webserver private IP
     debug: var=webserverip.openstack.private_v4
+
+  - name: Create Web server instances
+    os_server:
+      cloud: ospcloud
+      name: "{{ webserver1_name }}"
+      image: rhel-guest
+      meta: "group={{ webserver_group }},deployment_name={{ deployment }}"
+      flavor: "{{ flavour }}"
+      security_groups: ICMP_and_SSH
+      key_name: ansible_ssh
+      nics:
+      - net-name: int_network
+      userdata: |
+        #!/bin/bash
+        curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+        cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+        curl -o /tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
+        cp /tmp/internal.repo /etc/yum.repos.d/internal.repo
+    register: webserver1ip
+  - name: Add floating IP to webservers
+    os_floating_ip:
+      cloud: ospcloud
+      state: present
+      reuse: yes
+      server: "{{ webserver1_name }}"
+      network: ext_network
+      wait: true
+      timeout: 180
+    register: webserverfloatingip
+  - name: Show webserver1 public IP
+    debug: var=webserver1floatingip.floating_ip.floating_ip_address
+  - name: Show webserver1 private IP
+    debug: var=webserver1ip.openstack.private_v4
+
 
   - name: Create DB server instance
     os_server:
